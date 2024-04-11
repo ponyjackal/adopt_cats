@@ -6,6 +6,7 @@ import { CatsModule } from "./cats/cats.module";
 import { CoreModule } from "./core/core.module";
 import { UsersModule } from "./users/users.module";
 import { typeOrmAsyncConfig } from "./config/database";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { typeOrmAsyncConfig } from "./config/database";
     CoreModule,
     CatsModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

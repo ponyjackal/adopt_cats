@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Public } from "../common/decorators/public.decorator";
+import { User } from "../database/entity/User";
 
 @Controller("users")
 export class UsersController {
@@ -19,7 +22,8 @@ export class UsersController {
 
   @Public()
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
+  @UseInterceptors(ClassSerializerInterceptor)
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 

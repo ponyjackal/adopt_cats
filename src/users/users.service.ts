@@ -1,6 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { classToPlain } from "class-transformer";
+
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../database/entity/User";
@@ -13,9 +15,16 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = this.usersRepository.create(createUserDto);
-    await this.usersRepository.save(newUser);
-    return newUser;
+    const user = new User();
+    user.username = createUserDto.username;
+    user.password = createUserDto.password;
+
+    try {
+      await this.usersRepository.save(user);
+      return user;
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   async findAll(): Promise<User[]> {

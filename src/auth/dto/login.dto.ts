@@ -1,6 +1,6 @@
-import { IsInt, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
-export class SignInDto {
+export class LoginDto {
   @IsString()
   readonly username: string;
 

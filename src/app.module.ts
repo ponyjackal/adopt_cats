@@ -9,6 +9,7 @@ import { UsersModule } from "./users/users.module";
 import { typeOrmAsyncConfig } from "./config/database";
 import { AuthModule } from "./auth/auth.module";
 import { AccessTokenGuard } from "./common/guards/access-token.guard";
+import { RolesGuard } from "./common/guards/roles.guard";
 
 @Module({
   imports: [
@@ -24,6 +25,10 @@ import { AccessTokenGuard } from "./common/guards/access-token.guard";
     {
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

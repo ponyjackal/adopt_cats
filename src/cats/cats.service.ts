@@ -1,15 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { Cat } from './interfaces/cat.interface';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+
+import { Cat } from "../database/entity/Cat";
+import { CreateCatDto } from "./dto/create-cat.dto";
 
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [];
+  constructor(
+    @InjectRepository(Cat)
+    private catsRepository: Repository<Cat>
+  ) {}
 
-  create(cat: Cat) {
-    this.cats.push(cat);
+  async create(catDto: CreateCatDto): Promise<Cat> {
+    const cat = new Cat();
+    cat.name = catDto.name;
+    cat.age = catDto.age;
+    cat.breed = catDto.breed;
+
+    try {
+      await this.catsRepository.save(cat);
+      return cat;
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
-  findAll(): Cat[] {
-    return this.cats;
+  async findAll(): Promise<Cat[]> {
+    return this.catsRepository.find();
   }
 }

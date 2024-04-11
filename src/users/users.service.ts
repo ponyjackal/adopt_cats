@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { classToPlain } from "class-transformer";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "../database/entity/User";
+import { Role } from "src/common/enums/role.enum";
 
 @Injectable()
 export class UsersService {
@@ -18,6 +18,7 @@ export class UsersService {
     const user = new User();
     user.username = createUserDto.username;
     user.password = createUserDto.password;
+    user.roles = [Role.User];
 
     try {
       await this.usersRepository.save(user);

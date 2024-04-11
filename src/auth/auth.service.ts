@@ -4,6 +4,8 @@ import { JwtService } from "@nestjs/jwt";
 
 import { LoginDto } from "./dto/login.dto";
 import { UsersService } from "../users/users.service";
+import { RegisterDto } from "./dto/register.dto";
+import { User } from "../database/entity/User";
 
 @Injectable()
 export class AuthService {
@@ -40,5 +42,12 @@ export class AuthService {
         expiresIn: "15m",
       }),
     };
+  }
+
+  async register(register: RegisterDto): Promise<User> {
+    return this.usersService.create({
+      username: register.username,
+      password: register.password,
+    });
   }
 }

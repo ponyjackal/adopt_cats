@@ -5,21 +5,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { CatsModule } from "./cats/cats.module";
 import { CoreModule } from "./core/core.module";
 import { UsersModule } from "./users/users.module";
-import configuration from "./config/configuration";
+import { typeOrmAsyncConfig } from "./config/database";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [configuration],
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => {
-        console.log("cn", config.get("database"));
-        return config.get("database");
-      },
-      inject: [ConfigService],
-    }),
+    ConfigModule.forRoot({ envFilePath: [".env"], isGlobal: true }),
+    ConfigModule,
+    TypeOrmModule.forRootAsync(typeOrmAsyncConfig),
     CoreModule,
     CatsModule,
     UsersModule,

@@ -7,14 +7,7 @@ import { UsersModule } from "../users/users.module";
 import { AccessTokenStrategy } from "../common/guards/access-token.strategy";
 
 @Module({
-  imports: [
-    UsersModule,
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: "60s" },
-    }),
-  ],
+  imports: [UsersModule, PassportModule, JwtModule.register({})],
   controllers: [AuthController],
   providers: [AuthService, AccessTokenStrategy],
 })

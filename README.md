@@ -112,3 +112,9 @@ Access the Swagger UI to interact with the API and explore the available endpoin
 ```bash
 http://localhost:3000/api
 ```
+
+## TODO
+
+##### Implement refresh token
+
+##### Integrate unit tests for services

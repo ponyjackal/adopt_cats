@@ -17,10 +17,10 @@ Ensure that Node.js (preferably the latest LTS version) and PostgreSQL are insta
 
 ```bash
 # Clone the project
-git clone <repository-url>
+git clone https://github.com/ponyjackal/adopt_cats
 
 # Navigate to the project directory
-cd <project-directory>
+cd adopt_cats
 
 # Install dependencies
 npm install

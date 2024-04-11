@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -45,7 +50,13 @@ export class UsersService {
    * @returns An array of User entities
    */
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    try {
+      const cats = await this.usersRepository.find();
+      return cats;
+    } catch (err) {
+      // Throw an InternalServerErrorException in case of database read errors
+      throw new InternalServerErrorException(err.message);
+    }
   }
 
   /**
@@ -55,7 +66,13 @@ export class UsersService {
    * @returns The found User entity
    */
   async findOne(id: number): Promise<User> {
-    return this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      // Throw a NotFoundException if no user is found with the given ID
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    return user;
   }
 
   /**
@@ -64,8 +81,13 @@ export class UsersService {
    * @param username The user's username
    * @returns The found User entity
    */
-  async findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOneBy({ username });
+  async findOneByUsername(username: string): Promise<User | null> {
+    const user = await this.usersRepository.findOneBy({ username });
+    if (!user) {
+      return null;
+    }
+
+    return user;
   }
 
   /**
@@ -76,8 +98,23 @@ export class UsersService {
    * @returns The updated User entity
    */
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.usersRepository.update(id, updateUserDto);
-    return this.usersRepository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      // Throw a NotFoundException if no user is found with the given ID
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    // Update the user record with new values from the DTO
+    Object.assign(user, updateUserDto);
+
+    try {
+      // Save the updated cat record to the database
+      await this.usersRepository.save(user);
+      return user;
+    } catch (err) {
+      // Throw a BadRequestException if saving the updated record fails
+      throw new BadRequestException(err.message);
+    }
   }
 
   /**
@@ -86,6 +123,18 @@ export class UsersService {
    * @param id The ID of the user to remove
    */
   async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      // Throw a NotFoundException if no user is found with the given ID
+      throw new NotFoundException(`User with id ${id} not found`);
+    }
+
+    try {
+      // Delete the user record
+      await this.usersRepository.delete(id);
+    } catch (err) {
+      // Throw an InternalServerErrorException in case of database delete errors
+      throw new InternalServerErrorException(err.message);
+    }
   }
 }

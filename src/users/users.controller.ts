@@ -9,38 +9,44 @@ import {
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { Role } from "../common/enums/role.enum";
+import { Roles } from "../common/decorators/roles.decorator";
+import { User } from "./interfaces/user.interface";
 
 @Controller("users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
+  @Roles(Role.Admin)
+  async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(":id")
-  findOne(
+  async findOne(
     @Param("id", new ParseIntPipe())
     id: number
-  ) {
-    return this.usersService.findOne(+id);
+  ): Promise<User> {
+    return this.usersService.findOne(id);
   }
 
   @Patch(":id")
-  update(
+  async update(
     @Param("id", new ParseIntPipe())
     id: number,
     @Body() updateUserDto: UpdateUserDto
-  ) {
-    return this.usersService.update(+id, updateUserDto);
+  ): Promise<User> {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(":id")
-  remove(
+  @Roles(Role.Admin)
+  async remove(
     @Param("id", new ParseIntPipe())
     id: number
   ) {
-    return this.usersService.remove(+id);
+    await this.usersService.remove(id);
+    return { message: "User successfully deleted." };
   }
 }

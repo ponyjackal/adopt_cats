@@ -16,6 +16,8 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findOneByUsername(username);
+    if (!user) return null;
+
     const isMatch = await bcrypt.compare(pass, user.password);
     if (user && isMatch) {
       const { password, ...result } = user;
@@ -26,6 +28,8 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const user = await this.usersService.findOneByUsername(loginDto.username);
+    if (!user) throw new UnauthorizedException();
+
     const isMatch = await bcrypt.compare(loginDto.password, user.password);
     if (!isMatch) {
       throw new UnauthorizedException();

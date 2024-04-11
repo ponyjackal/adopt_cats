@@ -23,7 +23,7 @@ export class CatsController {
 
   @Post()
   @Roles(Role.Admin)
-  async create(@Body() createCatDto: CreateCatDto) {
+  async create(@Body() createCatDto: CreateCatDto): Promise<Cat> {
     return this.catsService.create(createCatDto);
   }
 
@@ -38,7 +38,7 @@ export class CatsController {
   findOne(
     @Param("id", new ParseIntPipe())
     id: number
-  ) {
+  ): Promise<Cat> {
     return this.catsService.findOne(id);
   }
 
@@ -48,7 +48,7 @@ export class CatsController {
     @Param("id", new ParseIntPipe())
     id: number,
     @Body() updateCatDto: UpdateCatDto
-  ) {
+  ): Promise<Cat> {
     return this.catsService.update(id, updateCatDto);
   }
 
